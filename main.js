@@ -66,15 +66,15 @@ if ('serviceWorker' in navigator) {
 
       if (installButton) {
           installButton.addEventListener('click', async () => {
-              if (!deferredPrompt) {
-                  window.open(window.location.href, '_blank');
-                  return;
+              if (deferredPrompt) {
+                  deferredPrompt.prompt();
+                  const { outcome } = await deferredPrompt.userChoice;
+                  console.log(`User response: ${outcome}`);
+                  deferredPrompt = null;
+              } else {
+                  console.log('No installation prompt available');
+                  alert('To install: \n1. Open in Chrome\n2. Click the three dots menu (⋮)\n3. Click "Install app"');
               }
-
-              deferredPrompt.prompt();
-              const { outcome } = await deferredPrompt.userChoice;
-              console.log(`User response: ${outcome}`);
-              deferredPrompt = null;
           });
       }
   });
