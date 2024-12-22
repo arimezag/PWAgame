@@ -53,32 +53,30 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
       const installButton = document.getElementById('installButton');
       
-      console.log('Install button:', installButton);
-
       if (installButton) {
-          installButton.style.display = 'none';
-
-          installButton.addEventListener('click', async () => {
-              installButton.style.display = 'none';
-              
-              if (deferredPrompt) {
-                  deferredPrompt.prompt();
-                  const { outcome } = await deferredPrompt.userChoice;
-                  console.log(`User response: ${outcome}`);
-                  deferredPrompt = null;
-              }
-          });
+          installButton.style.display = 'block';
+          console.log('Install button is now visible');
       }
 
       window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault();
           deferredPrompt = e;
-          
-          if (installButton) {
-              installButton.style.display = 'block';
-              console.log('Install button should now be visible');
-          }
+          console.log('Install prompt captured and ready');
       });
+
+      if (installButton) {
+          installButton.addEventListener('click', async () => {
+              if (!deferredPrompt) {
+                  window.open(window.location.href, '_blank');
+                  return;
+              }
+
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              console.log(`User response: ${outcome}`);
+              deferredPrompt = null;
+          });
+      }
   });
 
   document.addEventListener('DOMContentLoaded', () => {
